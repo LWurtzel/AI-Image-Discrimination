@@ -1,6 +1,10 @@
 Deliverable 2:
 Liev Wurtzel
 
+Relevant Datasets:
+CIFAKE Dataset: https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images
+Genimage Dataset: https://github.com/GenImage-Dataset/GenImage
+
 Goals: I am building an machine learning application that can discriminate between AI-generated and real images. This attempts to solve the growing problem of how people will be able to tell what’s real and what’s not. I hope to learn about what the actual differences between real and fake images are, and why they are so difficult to sort.
 
 Approach and Tools: My project is ML-oriented and I am using convoluted neural networks (CNNs) to generate a model using data that is publicly available on Kaggle. One difficulty is that the dataset available on Kaggle has really low-resolution images, so I am attempting to find another dataset with higher resolution images that I could also use for the project.
