@@ -1,0 +1,24 @@
+# Credentials — never commit
+kaggle.json
+*.env
+.env
+
+# Trained models (large binaries)
+*.keras
+*.h5
+
+# Datasets / downloads
+CIFAKE/
+genimage_val/
+genimage_out/
+genimage_p2/
+*.zip
+
+# Local game images
+game_images/
+cifake_game/
+genimage_game/
+
+# Python / Jupyter cruft
+__pycache__/
+.ipynb_checkpoints/
