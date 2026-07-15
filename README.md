@@ -8,15 +8,15 @@
 *A detector trained on a single generator collapses to chance on unseen generators (red); a detector trained across multiple generators generalizes far better (green). ★ marks generators the given model trained on.*
 
 ## Repository contents
-- **`CIFAKE_CNN.ipynb`** — from-scratch CNN trained on the CIFAKE dataset (single-generator baseline).
-- **`Genimage_CNN.ipynb`** — ResNet50V2 transfer-learning model trained across multiple GenImage generators.
+- **`CIFAKE_CNN.ipynb`** — notebook used to train a CNN on the CIFAKE dataset (single-generator baseline).
+- **`Genimage_CNN.ipynb`** — note book used to train a ResNet50V2 CNN across multiple GenImage generators.
 - **`spot_the_ai_game_all_generators.ipynb`** — the human-vs-model game as a self-contained notebook (auto-downloads the model and images).
 - **`docs/`** — the browser-based game (served via GitHub Pages).
 - **`cifake_vs_genimage_generalization.png`, `cifake_to_genimage_collapse.png`** — result figures.
 - **Slides** — presentation covering the problem, approach, and findings.
 
 ## Models
-Trained models are published as assets under **[Releases](https://github.com/LWurtzel/Discerning-the-Synthetic/releases)** (too large for the repo). The notebooks and the website download them automatically.
+The trained CNNs are attached as assets under **[Releases](https://github.com/LWurtzel/Discerning-the-Synthetic/releases)** (too large for the repo). The notebooks and the website download them automatically.
 
 ## Datasets
 - **CIFAKE** — [kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images](https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images)
