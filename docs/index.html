@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Spot the AI Image</title>
+<title>Discerning the Synthetic</title>
 <style>
 body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:#0d1117;color:#e6edf3;margin:0;padding:24px;display:flex;flex-direction:column;align-items:center}
 h1{font-size:1.5rem;margin:0 0 4px;text-align:center}
@@ -12,12 +12,13 @@ h1{font-size:1.5rem;margin:0 0 4px;text-align:center}
 #photo{width:340px;height:340px;object-fit:cover;border-radius:10px;border:1px solid #30363d;background:#161b22}
 .btns{margin:16px 0;display:flex;gap:10px}
 button{font-size:1rem;padding:10px 20px;border-radius:8px;border:none;cursor:pointer;color:#fff}
-.real{background:#238636}.fake{background:#da3633}.skip{background:#484f58}.next{background:#1f6feb}
+.real{background:#238636}.fake{background:#da3633}.skip{background:#484f58}.next{background:#1f6feb}.again{background:#8957e5}
 button:disabled{opacity:.4;cursor:default}
 #reveal{min-height:120px;text-align:center;line-height:1.7}
 .score{font-weight:bold;margin-top:8px}.ok{color:#3fb950}.no{color:#f85149}
+#bAgain{display:none;margin-top:14px}
 </style></head><body>
-<h1>Spot the AI Image</h1>
+<h1>Discerning the Synthetic</h1>
 <div class="sub">You vs. a neural network. Real photo or AI-generated? The model trained on some image generators but not others &mdash; watch it slip on the ones it never saw.</div>
 <div id="status">Loading model (~90 MB, one time)&hellip;</div>
 <div id="game">
@@ -30,24 +31,27 @@ button:disabled{opacity:.4;cursor:default}
 <button class="next" id="bNext" disabled>Next &#9654;</button>
 </div>
 <div id="reveal"></div>
+<button class="again" id="bAgain">&#8635; Play Again</button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.11.0/dist/tf.min.js"></script>
 <script>
 const TRAINED=new Set(["stable_diffusion_v_1_4","glide","BigGAN"]);
-const ROUNDS=10; let model,pool,S;
+const ROUNDS=10; let model,manifest,pool,S;
 const $=id=>document.getElementById(id);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
 async function init(){
 try{
 model=await tf.loadGraphModel('model/model.json');
-const m=await (await fetch('manifest.json')).json();
-$('status').style.display='none';$('game').style.display='flex';start(m);
+manifest=await (await fetch('manifest.json')).json();
+$('status').style.display='none';$('game').style.display='flex';start();
 }catch(e){$('status').textContent='Error loading model: '+e.message;}
 }
-function start(m){
-const reals=shuffle(m.filter(x=>x.label==='real')).slice(0,ROUNDS);
-const fakes=shuffle(m.filter(x=>x.label==='fake')).slice(0,ROUNDS);
-pool=shuffle([...reals,...fakes]);S={i:0,human:0,machine:0,played:0};showRound();
+function start(){
+const reals=shuffle(manifest.filter(x=>x.label==='real')).slice(0,ROUNDS);
+const fakes=shuffle(manifest.filter(x=>x.label==='fake')).slice(0,ROUNDS);
+pool=shuffle([...reals,...fakes]);S={i:0,human:0,machine:0,played:0};
+$('bAgain').style.display='none';$('photo').style.display='';document.querySelector('.btns').style.display='flex';
+showRound();
 }
 function showRound(){
 const it=pool[S.i];$('round').textContent=`Round ${S.played+1} of ${ROUNDS}`;
@@ -63,15 +67,17 @@ toggle(false);const it=pool[S.i];const p=await predict();
 const mPred=p>=0.5?'real':'fake';const hOk=choice===it.label,mOk=mPred===it.label;
 S.human+=hOk;S.machine+=mOk;S.played++;
 const gen=it.label==='fake'?`${it.generator} — ${TRAINED.has(it.generator)?'trained':'UNSEEN'}`:'real photo';
-$('reveal').innerHTML=`Truth: <b>${it.label.toUpperCase()}</b> [${gen}]<br>You: ${choice.toUpperCase()} <span class="${hOk?'ok':'no'}">${hOk?'\u2713':'\u2717'}</span><br>Model: ${mPred.toUpperCase()} (p=${p.toFixed(2)}) <span class="${mOk?'ok':'no'}">${mOk?'\u2713':'\u2717'}</span><div class="score">You ${S.human}/${S.played} &middot; Model ${S.machine}/${S.played}</div>`;
+$('reveal').innerHTML=`Truth: <b>${it.label.toUpperCase()}</b> [${gen}]<br>You: ${choice.toUpperCase()} <span class="${hOk?'ok':'no'}">${hOk?'✓':'✗'}</span><br>Model: ${mPred.toUpperCase()} (p=${p.toFixed(2)}) <span class="${mOk?'ok':'no'}">${mOk?'✓':'✗'}</span><div class="score">You ${S.human}/${S.played} &middot; Model ${S.machine}/${S.played}</div>`;
 }
 function advance(){
 S.i++;
 if(S.played>=ROUNDS||S.i>=pool.length){
 $('round').textContent='Final';$('photo').style.display='none';document.querySelector('.btns').style.display='none';
 $('reveal').innerHTML=`<b>Final score</b><div class="score">You ${S.human}/${S.played} &middot; Model ${S.machine}/${S.played}</div>`;
+$('bAgain').style.display='inline-block';
 }else showRound();
 }
 $('bReal').onclick=()=>guess('real');$('bFake').onclick=()=>guess('fake');
-$('bSkip').onclick=advance;$('bNext').onclick=advance;init();
+$('bSkip').onclick=advance;$('bNext').onclick=advance;$('bAgain').onclick=start;
+init();
 </script></body></html>
