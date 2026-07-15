@@ -22,3 +22,4 @@ genimage_game/
 # Python / Jupyter cruft
 __pycache__/
 .ipynb_checkpoints/
+.DS_Store
