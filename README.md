@@ -4,7 +4,7 @@
 
 **[▶ Play the human-vs-model game in your browser](https://lwurtzel.github.io/Discerning-the-Synthetic/)**
 
-![Model comparison across generators](cifake_vs_genimage_generalization.png)
+![Model comparison across generators](figures/cifake_vs_genimage_generalization.png)
 
 *A detector trained on a single generator (red) collapses to chance on generators it never saw; a detector trained across multiple generators (green) generalizes far better, though it still dips significantly on unseen generators. ★ marks the generators each model was actually trained on.*
 
@@ -49,7 +49,7 @@ Everything was built with **TensorFlow / Keras**, using a cached `tf.data` input
 
 ### 1. A single-generator detector works, but then collapses
 
-![CIFAKE detector collapse](cifake_to_genimage_collapse.png)
+![CIFAKE detector collapse](figures/cifake_to_genimage_collapse.png)
 
 The CIFAKE-trained CNN scores **95.1%** on held-out CIFAKE images (Stable Diffusion 1.4). Pointed at eight other generators it never saw, its accuracy falls to a **~47% average — at or below chance.** A detector that does worse than a coin flip on unseen generators has not learned "what AI images look like"; it has memorized the fingerprint of one generator.
 
@@ -60,15 +60,15 @@ See the header figure. Retraining a **ResNet50V2** across three generators (SD 1
 ### 3. How it fails: it defaults to "real"
 
 <p align="center">
-  <img src="simple_confusion_matrix.png" width="46%">
-  <img src="source_breakdown.png" width="46%">
+  <img src="figures/simple_confusion_matrix.png" width="46%">
+  <img src="figures/source_breakdown.png" width="46%">
 </p>
 
 Across 100,000 validation images, the GenImage model is **cautious**: it is correct on **96% of real photos** but catches only **~61% of fakes.** The per-generator breakdown (right) shows *why* — fakes from the generators it never trained on (**ADM, VQDM, Midjourney**) are misclassified as "real" roughly **70% of the time.** When the model is unsure, it guesses "real," so unseen generators slip through.
 
 ### 4. The lever: the decision threshold
 
-![Threshold tradeoff](threshold_tradeoff.jpg)
+![Threshold tradeoff](figures/threshold_tradeoff.png)
 
 Because missed fakes get labeled "real," raising the bar for a "real" verdict catches more fakes — at a cost to real-photo accuracy. There is no free lunch:
 
@@ -81,7 +81,7 @@ Tuning the threshold picks **which errors you make**; it does not teach the mode
 
 ### 5. What is it looking at?
 
-![Grad-CAM](gradcam.png)
+![Grad-CAM](figures/gradcam.png)
 
 Grad-CAM highlights the pixels that drove each prediction. The detector attends to the **rendered subject itself** — the object's textures and edges — rather than the background, reading generation artifacts in how the object was drawn. (This is a nice contrast with the low-resolution CIFAKE literature, which found background cues mattered more at 32×32.)
 
@@ -108,12 +108,12 @@ Served via GitHub Pages at **[lwurtzel.github.io/Discerning-the-Synthetic](https
 
 ### Result & analysis figures
 
-- **`cifake_vs_genimage_generalization.png`** — The headline comparison: CIFAKE model (red) vs. GenImage model (green) on all eight generators, with the trained generators starred.
-- **`cifake_to_genimage_collapse.png`** — The CIFAKE model alone, showing the 95% → ~47% collapse on unseen generators.
-- **`simple_confusion_matrix.png`** — 2×2 confusion matrix for the GenImage model over 100k validation images (cautious: 96% of reals correct, ~61% of fakes caught).
-- **`source_breakdown.png`** — Per-generator breakdown of how each source is classified; shows unseen fakes slipping through as "real."
-- **`threshold_tradeoff.jpg`** — Fake-catch rate vs. real-photo accuracy as the decision threshold sweeps from 0.5 to 1.0.
-- **`gradcam.png`** — Grad-CAM interpretability panels showing where the model looks.
+- **`figures/cifake_vs_genimage_generalization.png`** — The headline comparison: CIFAKE model (red) vs. GenImage model (green) on all eight generators, with the trained generators starred.
+- **`figures/cifake_to_genimage_collapse.png`** — The CIFAKE model alone, showing the 95% → ~47% collapse on unseen generators.
+- **`figures/simple_confusion_matrix.png`** — 2×2 confusion matrix for the GenImage model over 100k validation images (cautious: 96% of reals correct, ~61% of fakes caught).
+- **`figures/source_breakdown.png`** — Per-generator breakdown of how each source is classified; shows unseen fakes slipping through as "real."
+- **`figures/threshold_tradeoff.png`** — Fake-catch rate vs. real-photo accuracy as the decision threshold sweeps from 0.5 to 1.0.
+- **`figures/gradcam.png`** — Grad-CAM interpretability panels showing where the model looks.
 
 ### Other
 
